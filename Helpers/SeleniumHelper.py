@@ -1,4 +1,6 @@
 from selenium import webdriver
+from GettingSettings import GettingSettings
+from WebDriverFactory import WebDriverFactory
 from selenium.webdriver.edge.service import Service
 from selenium.webdriver.edge.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
@@ -6,13 +8,15 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
 class SeleniumHelper:
-    def __init__(self, url):
-        self._options = Options()
-        self._options.add_argument("--start-maximized")
-        self._service = Service(r"C:\Drivers\edgedriver_win32\msedgedriver.exe")
-        self._driver = webdriver.Edge(service=self._service, options=self._options)
-        self._url = url
+    def __init__(self):
+        self._settings = GettingSettings
+        self._factoryWebDriver = WebDriverFactory
+
+        self._url = self._settings.getUrl()
+        self._drive = self._factoryWebDriver.getDriver(option=self._settings.getBrowser())
 
     def execProcess(self):
-        print("HOLA")
+        self._drive.get("http://rh.sanborns.com.mx/web/checador")
+        
+        
 
