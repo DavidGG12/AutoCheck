@@ -1,0 +1,33 @@
+import win32evtlogutil
+import win32evtlog
+
+class EventLoggerWin:
+    def __init__(self, appName: str):
+        self.APPNAME = appName
+
+    def throwEvent(self, eventID: int, typeEvent: str, message: chr) -> None:
+        try:
+            typeEventLog: win32evtlog
+
+            if typeEvent.upper() == "INFO":
+                typeEventLog = win32evtlog.EVENTLOG_INFORMATION_TYPE
+            elif typeEvent.upper() == "WARNING":
+                typeEventLog = win32evtlog.EVENTLOG_WARNING_TYPE
+            elif typeEvent.upper() == "ERROR":
+                typeEventLog = win32evtlog.EVENTLOG_ERROR_TYPE
+            else:
+                raise ValueError("Option chose isn't a validate value.")
+
+            win32evtlogutil.ReportEvent(
+                appName=self.APPNAME,
+                eventID=eventID,
+                eventCategory=0,
+                eventType=typeEventLog,
+                strings=[message],
+                data=b''
+            )
+        except Exception as e:
+            raise ValueError(e)
+        
+
+
