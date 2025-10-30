@@ -1,7 +1,10 @@
 from selenium import webdriver
+from webdriver_manager.microsoft import EdgeChromiumDriverManager
 from selenium.webdriver.edge.service import Service
 from selenium.webdriver.edge.options import Options
 from EventLoggerWin import EventLoggerWin
+import traceback
+import requests
 
 class WebDriverFactory:
     def __init__(self):
@@ -13,23 +16,22 @@ class WebDriverFactory:
         self._driver = None
 
     def getDriver(self, option: str) -> webdriver:
+        print(option)
         if option.upper() == "EDGE":
-            attempts = [
-                (lambda: webdriver.Edge(), 4000001, "WARNING"),
-                (lambda: webdriver.Edge(service=self._service, options=self._options), 5000001, "ERROR"),
-            ]
+            try:
+                self._driver = webdriver.Edge(service=self._service, options=self._options)
 
-            lastExc = None
+                return self._driver
+            except Exception as ex:
+                self._logger.throwEvent(4000001, "WARNING", ex)
 
-            for factory, code, level in attempts:
                 try:
-                    self._driver = factory()
+                    self._driver = webdriver.Edge(driverPath)
                     return self._driver
-                except Exception as e:
-                    lastExc = e
-                    self._logger.throwEvent(code, level, e)
-
-            raise ValueError(lastExc)
+                except Exception as ex:
+                    self._logger.throwEvent(5000001, "ERROR", ex)
+                    raise ValueError(ex)
+                
         elif option.upper() == "FIREFOX":
             self._driver = webdriver.Firefox()
             return self._driver
