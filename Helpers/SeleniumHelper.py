@@ -26,7 +26,7 @@ class SeleniumHelper:
         return True if(self._schedule[0] >= self._actualTime >= self._schedule[1]) else False 
 
     def execProcess(self) -> None:
-        if not self.validateSchedule:
+        if not self.validateSchedule():
             return
 
         try:
