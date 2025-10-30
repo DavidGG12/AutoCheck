@@ -44,7 +44,3 @@ class InitDataBase:
     def closeConnection(self) -> None:
         self._con.close()
 
-# lol = InitDataBase()
-# print(lol.slExecuteProcess())
-# lol.updExecuteProcess("1")
-# print(lol.slExecuteProcess())

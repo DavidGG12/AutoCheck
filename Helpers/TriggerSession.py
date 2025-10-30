@@ -28,7 +28,7 @@ class TriggerSession:
             pass
 
         #Definition of schedule that we need to execute proceess and actual time
-        self._schedule = [time(8, 0), time(10, 0)]
+        self._schedule = [time(8, 0), time(10, 0), time(18,0)]
         self._actualTime = datetime.now().time()
 
     def _getSessionUser(self, sessionId):
@@ -102,6 +102,6 @@ class TriggerSession:
             win32gui.PumpWaitingMessages()
             tm.sleep(0.1)
 
-            if not self._validateSchedule() and self._actualTime >= self._schedule[1]:
+            if not self._validateSchedule() and self._actualTime >= self._schedule[2]:
                 self._inDataBase.deletingTable()
                 self._inDataBase.closeConnection()
