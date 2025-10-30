@@ -1,4 +1,5 @@
 import sqlite3
+import re
 
 class InitDataBase:
     def __init__(self):
@@ -23,22 +24,27 @@ class InitDataBase:
         except Exception as ex:
             raise ValueError(ex)
 
-    def updExecuteProcess(self, newData: str, oldData: str) -> str:
+    def updExecuteProcess(self, newData: str) -> str:
         try:
-            self._cur.execute("UPDATE ExecuteProcess SET NumberOfExecutions = ? WHERE NumberOfExecutions = ?", newData, oldData)
+            self._cur.execute("UPDATE ExecuteProcess SET NumberOfExecutions = ?", newData)
             self._con.commit()
             return "Row updated"
         except Exception as ex:
             return f"There was an unexpected error while executing update: {ex}"
         
-    def slExecuteProcess(self):
+    def slExecuteProcess(self) -> str:
         try:
             for x in self._cur.execute("SELECT * FROM ExecuteProcess"):
-                print(x)
+                string = str(x)
+                string = re.sub(r'\D', "", string)
+                return string
         except Exception as ex:
             return f"There was an unexpected error while executing select: {ex}"
 
     def closeConnection(self) -> None:
         self._con.close()
 
-
+# lol = InitDataBase()
+# print(lol.slExecuteProcess())
+# lol.updExecuteProcess("1")
+# print(lol.slExecuteProcess())

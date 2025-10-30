@@ -1,5 +1,6 @@
 from Helpers.GettingSettings import GettingSettings
 from Helpers.SeleniumHelper import SeleniumHelper
+from Helpers.InitDataBase import InitDataBase
 from datetime import date, datetime, time
 import time as tm
 import win32api
@@ -19,6 +20,12 @@ class TriggerSession:
         self._userPC = self._inGettingSettings.getSessionUser()
 
         self._inSeleniumHelper = SeleniumHelper()
+        self._inDataBase = InitDataBase()
+        
+        try:
+            self._inDataBase.creatingTable()
+        except:
+            pass
 
         #Definition of schedule that we need to execute proceess and actual time
         self._schedule = [time(8, 0), time(10, 0)]
@@ -40,20 +47,32 @@ class TriggerSession:
 
     def _validateSchedule(self):
         return True if(self._schedule[0] >= self._actualTime >= self._schedule[1]) else False 
+    
+    def _validateNumExecutions(self):
+        return True if self._inDataBase.slExecuteProcess() == "0" else False
 
     def _wndproc(self, hwnd, msg, wparam, lparam):
-        if msg == self.WM_WTSESSION_CHANGE and self._validateSchedule(): 
-            event = wparam
-            sessionID = lparam
+        lol = self._validateNumExecutions()
 
-            if event == self.WTS_SESSION_UNLOCK:
-                userLogin = self._getSessionUser(sessionID)
+        try:
+            if msg == self.WM_WTSESSION_CHANGE and self._validateNumExecutions(): 
+                event = wparam
+                sessionID = lparam
 
-                if userLogin and userLogin == self._userPC:
-                    #Log this event in the windows logger
-                    self._inSeleniumHelper.execProcess()
-                    print(f"INICIANDO SESIÓN CON: {userLogin}")
 
+                if event == self.WTS_SESSION_UNLOCK:
+                    userLogin = self._getSessionUser(sessionID)
+
+                    if userLogin and userLogin == self._userPC:
+                        #Log this event in the windows logger
+                        self._inSeleniumHelper.execProcess()
+                        self._inDataBase.updExecuteProcess(newData="1")
+                        print(f"INICIANDO SESIÓN CON: {userLogin}")
+        except Exception as ex:
+            self._inDataBase.updExecuteProcess(newData="0")
+
+            #Put this error to the logger
+            raise ValueError(ex)
         return win32gui.DefWindowProc(hwnd, msg, wparam, lparam)
     
     def execMonitor(self, monitorAllSessions=False):
@@ -84,4 +103,5 @@ class TriggerSession:
             tm.sleep(0.1)
 
             if not self._validateSchedule() and self._actualTime >= self._schedule[1]:
-                break
+                self._inDataBase.deletingTable()
+                self._inDataBase.closeConnection()
