@@ -10,18 +10,13 @@ import win32ts
 
 class TriggerSession:
     def __init__(self):
-        self.WM_WTSESSION_CHANGE = 0x02B1
-        self.WTS_SESSION_LOCK = 0x7
-        self.WTS_SESSION_UNLOCK = 0x8
-        self.NOTIFY_FOR_THIS_SESSION = getattr(win32ts, "NOTIFY_FOR_THIS_SESSION", 0)
-        self.NOTIFY_FOR_ALL_SESSIONS = getattr(win32ts, "NOTIFY_FOR_ALL_SESSIONS", 1)
-
+        #Definition of instances
         self._inGettingSettings = GettingSettings()
-        self._userPC = self._inGettingSettings.getSessionUser()
-
         self._inSeleniumHelper = SeleniumHelper()
         self._inDataBase = InitDataBase()
-        
+
+        #Init Database and settings we need
+        self._userPC = self._inGettingSettings.getSessionUser()
         try:
             self._inDataBase.creatingTable()
         except:
@@ -30,6 +25,14 @@ class TriggerSession:
         #Definition of schedule that we need to execute proceess and actual time
         self._schedule = [time(8, 0), time(10, 0), time(18,0)]
         self._actualTime = datetime.now().time()
+        
+        #Definition of constants we going to need
+        self.WM_WTSESSION_CHANGE = 0x02B1
+        self.WTS_SESSION_LOCK = 0x7
+        self.WTS_SESSION_UNLOCK = 0x8
+        self.NOTIFY_FOR_THIS_SESSION = getattr(win32ts, "NOTIFY_FOR_THIS_SESSION", 0)
+        self.NOTIFY_FOR_ALL_SESSIONS = getattr(win32ts, "NOTIFY_FOR_ALL_SESSIONS", 1)
+
 
     def _getSessionUser(self, sessionId):
         try:
@@ -52,8 +55,6 @@ class TriggerSession:
         return True if self._inDataBase.slExecuteProcess() == "0" else False
 
     def _wndproc(self, hwnd, msg, wparam, lparam):
-        lol = self._validateNumExecutions()
-
         try:
             if msg == self.WM_WTSESSION_CHANGE and self._validateNumExecutions(): 
                 event = wparam
