@@ -2,7 +2,7 @@ from selenium import webdriver
 from webdriver_manager.microsoft import EdgeChromiumDriverManager
 from selenium.webdriver.edge.service import Service
 from selenium.webdriver.edge.options import Options
-from EventLoggerWin import EventLoggerWin
+from Helpers.EventLoggerWin import EventLoggerWin
 import traceback
 import requests
 

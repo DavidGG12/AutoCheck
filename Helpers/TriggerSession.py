@@ -1,5 +1,5 @@
-from GettingSettings import GettingSettings
-from SeleniumHelper import SeleniumHelper
+from Helpers.GettingSettings import GettingSettings
+from Helpers.SeleniumHelper import SeleniumHelper
 import win32api
 import win32con
 import win32gui
@@ -42,15 +42,14 @@ class TriggerSession:
             if event == self.WTS_SESSION_UNLOCK:
                 userLogin = self._getSessionUser(sessionID)
 
-                if userLogin:
+                if userLogin and userLogin == self._userPC:
                     #Log this event in the windows logger
-                    if userLogin == self._userPC:
-                        self._inSeleniumHelper.execProcess()
-                        print(f"INICIANDO SESIÓN CON: {userLogin}")
+                    self._inSeleniumHelper.execProcess()
+                    print(f"INICIANDO SESIÓN CON: {userLogin}")
 
         return win32gui.DefWindowProc(hwnd, msg, wparam, lparam)
     
-    def getUser(self, monitorAllSessions=False):
+    def execMonitor(self, monitorAllSessions=False):
         wc = win32gui.WNDCLASS()
         hinst = wc.hInstance = win32api.GetModuleHandle(None)
         wc.lpszClassName = "SessionMonitorClass_Python"
@@ -76,8 +75,3 @@ class TriggerSession:
         while True:
             win32gui.PumpWaitingMessages()
             time.sleep(0.1)
-
-
-lol = TriggerSession()
-lol.getUser(True)
-    

@@ -1,7 +1,7 @@
 from selenium import webdriver
-from GettingSettings import GettingSettings
-from WebDriverFactory import WebDriverFactory
-from EventLoggerWin import EventLoggerWin
+from Helpers.GettingSettings import GettingSettings
+from Helpers.WebDriverFactory import WebDriverFactory
+from Helpers.EventLoggerWin import EventLoggerWin
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
