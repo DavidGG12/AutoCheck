@@ -19,12 +19,14 @@ class InitDataBase:
     def deletingTable(self) -> None:
         try:
             self._cur.execute("DROP TABLE ExecuteProcess")
+            self._con.commit()
         except Exception as ex:
             raise ValueError(ex)
 
-    def updExecuteProcess(self, data: str) -> str:
+    def updExecuteProcess(self, newData: str, oldData: str) -> str:
         try:
-            self._cur.execute("UPDATE ExecuteProcess SET NumberOfExecutions = ? WHERE NumberOfExecutions = '0'", data)
+            self._cur.execute("UPDATE ExecuteProcess SET NumberOfExecutions = ? WHERE NumberOfExecutions = ?", newData, oldData)
+            self._con.commit()
             return "Row updated"
         except Exception as ex:
             return f"There was an unexpected error while executing update: {ex}"
@@ -39,11 +41,4 @@ class InitDataBase:
     def closeConnection(self) -> None:
         self._con.close()
 
-lol = InitDataBase()
-# lol.deletingTable()
-# lol.creatingTable()
-lol.slExecuteProcess()
-lol.updExecuteProcess("1")
-lol.slExecuteProcess() 
-lol.closeConnection()
 

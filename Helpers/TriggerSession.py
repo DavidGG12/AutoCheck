@@ -1,10 +1,11 @@
 from Helpers.GettingSettings import GettingSettings
 from Helpers.SeleniumHelper import SeleniumHelper
+from datetime import date, datetime, time
+import time as tm
 import win32api
 import win32con
 import win32gui
 import win32ts
-import time
 
 class TriggerSession:
     def __init__(self):
@@ -18,6 +19,10 @@ class TriggerSession:
         self._userPC = self._inGettingSettings.getSessionUser()
 
         self._inSeleniumHelper = SeleniumHelper()
+
+        #Definition of schedule that we need to execute proceess and actual time
+        self._schedule = [time(8, 0), time(10, 0)]
+        self._actualTime = datetime.now().time()
 
     def _getSessionUser(self, sessionId):
         try:
@@ -33,9 +38,11 @@ class TriggerSession:
             #Log this event in the windows logger
             return None
 
+    def _validateSchedule(self):
+        return True if(self._schedule[0] >= self._actualTime >= self._schedule[1]) else False 
 
     def _wndproc(self, hwnd, msg, wparam, lparam):
-        if msg == self.WM_WTSESSION_CHANGE:
+        if msg == self.WM_WTSESSION_CHANGE and self._validateSchedule(): 
             event = wparam
             sessionID = lparam
 
@@ -74,4 +81,7 @@ class TriggerSession:
 
         while True:
             win32gui.PumpWaitingMessages()
-            time.sleep(0.1)
+            tm.sleep(0.1)
+
+            if not self._validateSchedule() and self._actualTime >= self._schedule[1]:
+                break
