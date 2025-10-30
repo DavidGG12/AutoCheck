@@ -6,6 +6,13 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
+'''
+    Summary
+        SeleniumHelper how the name describes it.
+        This class help us to exec all the steps to register
+        our entrance hour.
+'''
+
 class SeleniumHelper:
     def __init__(self):
         #Definition of instances
@@ -21,11 +28,12 @@ class SeleniumHelper:
         try:
             self._drive.get("http://rh.sanborns.com.mx/web/checador")
 
-            # Wait for the page to be fully loaded
+            #Wait for the page to be fully loaded
             WebDriverWait(self._drive, 15).until(
                 lambda d: d.execute_script("return document.readyState") == "complete"
             )
 
+            #Wait for the iframe to be fully loaded
             iframe = WebDriverWait(self._drive, 15).until(
                 EC.presence_of_element_located((By.TAG_NAME, "iframe"))
             )
