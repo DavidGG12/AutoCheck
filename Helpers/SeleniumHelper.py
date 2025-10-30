@@ -5,17 +5,30 @@ from Helpers.EventLoggerWin import EventLoggerWin
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from datetime import date, datetime, time
 
 class SeleniumHelper:
     def __init__(self):
+        #Definition of instances
         self._settings = GettingSettings()
         self._factoryWebDriver = WebDriverFactory()
-
         self._logger = EventLoggerWin("AutoCheck")
+
+        #Definition of settings that we going to need to define our driver
         self._url = self._settings.getUrl()
         self._drive = self._factoryWebDriver.getDriver(option=self._settings.getBrowser())
+        
+        #Definition of schedule that we need to execute proceess and actual time
+        self._schedule = [time(8, 0), time(10, 0)]
+        self._actualTime = datetime.now().time()
 
-    def execProcess(self):
+    def validateSchedule(self) -> bool:
+        return True if(self._schedule[0] >= self._actualTime >= self._schedule[1]) else False 
+
+    def execProcess(self) -> None:
+        if not self.validateSchedule:
+            return
+
         try:
             self._drive.get("http://rh.sanborns.com.mx/web/checador")
 
